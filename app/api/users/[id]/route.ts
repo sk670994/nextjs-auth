@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { AuthUserPayload, getAuthUser } from "@/lib/auth-guard";
 import {
@@ -7,8 +7,8 @@ import {
 } from "@/services/user.service";
 
 export async function PUT(
-  req: Request,
-  context: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   await connectDB();
 
@@ -18,7 +18,7 @@ export async function PUT(
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
-  const { id } = context.params;
+  const { id } = await context.params;
   const data = (await req.json()) as Record<string, unknown>;
 
   const updated = await updateUserByAdmin(id, data);
@@ -27,8 +27,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  context: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   await connectDB();
 
@@ -38,7 +38,7 @@ export async function DELETE(
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
-  const { id } = context.params;
+  const { id } = await context.params;
 
   await deleteUserByAdmin(id);
 
