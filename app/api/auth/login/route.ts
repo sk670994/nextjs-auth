@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       { expiresIn: "1d" }
     );
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         message: "Login successful",
         token,
@@ -57,9 +57,20 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
+
+    // Also set an HTTP-only cookie for middleware-based protection
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 day
+    });
+
+    return response;
   } catch (error) {
     return NextResponse.json(
-      { message: "Something went wrong" },
+      { message: "Something went wrong" ,error },
       { status: 500 }
     );
   }

@@ -1,12 +1,14 @@
 import User from "@/models/User";
 
+type UpdateData = Record<string, unknown>;
+
 // Get own profile
 export async function getProfile(userId: string) {
   return await User.findById(userId).select("-password");
 }
 
 // Update own profile
-export async function updateProfile(userId: string, data: any) {
+export async function updateProfile(userId: string, data: UpdateData) {
   return await User.findByIdAndUpdate(userId, data, {
     new: true,
   }).select("-password");
@@ -23,7 +25,7 @@ export async function getAllUsers() {
 }
 
 // Admin: update user
-export async function updateUserByAdmin(id: string, data: any) {
+export async function updateUserByAdmin(id: string, data: UpdateData) {
   return await User.findByIdAndUpdate(id, data, {
     new: true,
   }).select("-password");

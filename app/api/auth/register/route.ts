@@ -38,10 +38,10 @@ export async function POST(req: Request) {
       { message: "User registered successfully", user: newUser },
       { status: 201 }
     );
- } catch (error: any) {
-  console.error("REGISTER ERROR:", error);
+ }  catch (error) {
+  console.error("LOGIN ERROR:", error);
   return NextResponse.json(
-    { message: error.message },
+    { message: "Something went wrong", error: String(error) },
     { status: 500 }
   );
 }
