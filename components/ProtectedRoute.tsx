@@ -1,17 +1,22 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 
-export default function ProtectedRoute({ children }: any) {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const token = useSelector((state: RootState) => state.auth.token);
+
+  // Rely only on browser storage so it works across refreshes
+  const hasToken =
+    typeof window !== "undefined" && !!localStorage.getItem("token");
 
   useEffect(() => {
-    if (!token) router.push("/login");
-  }, [token]);
+    if (!hasToken) router.push("/login");
+  }, [hasToken, router]);
 
-  return token ? children : null;
+  return hasToken ? children : null;
 }

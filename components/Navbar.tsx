@@ -1,33 +1,61 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { logout } from "@/redux/authSlice";
 
 export default function Navbar() {
-  const auth = useAuth();
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  if (!auth) return null; // prevent crash
-
-  const { user, logout } = auth;
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push("/login");
+  };
 
   return (
-    <nav className="flex gap-6 p-4 bg-gray-900 text-white">
-      <Link href="/">Home</Link>
+    <nav className="flex items-center justify-between px-6 py-3 bg-gray-900 text-white">
+      <Link href="/" className="text-lg font-semibold">
+        Auth System
+      </Link>
 
-      {!user && (
-        <>
-          <Link href="/login">Login</Link>
-          <Link href="/register">Register</Link>
-        </>
-      )}
+      <div className="flex items-center gap-4 text-sm">
+        {!user && (
+          <>
+            <Link href="/login" className="hover:text-blue-300">
+              Login
+            </Link>
+            <Link href="/register" className="hover:text-blue-300">
+              Register
+            </Link>
+          </>
+        )}
 
-      {user && (
-        <>
-          <Link href="/dashboard">Dashboard</Link>
-          {user.role === "admin" && <Link href="/admin">Admin</Link>}
-          <button onClick={logout}>Logout</button>
-        </>
-      )}
+        {user && (
+          <>
+            <span className="hidden sm:inline text-gray-300">
+              {user.name} ({user.role})
+            </span>
+            <Link href="/dashboard" className="hover:text-blue-300">
+              Dashboard
+            </Link>
+            {user.role === "admin" && (
+              <Link href="/admin" className="hover:text-blue-300">
+                Admin
+              </Link>
+            )}
+            <button
+              onClick={handleLogout}
+              className="rounded bg-red-600 px-3 py-1 text-xs font-medium hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </>
+        )}
+      </div>
     </nav>
   );
 }

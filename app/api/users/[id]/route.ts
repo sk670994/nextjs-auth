@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getAuthUser } from "@/lib/auth-guard";
+import { AuthUserPayload, getAuthUser } from "@/lib/auth-guard";
 import {
   updateUserByAdmin,
   deleteUserByAdmin,
@@ -8,18 +8,18 @@ import {
 
 export async function PUT(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   await connectDB();
 
   const user = await getAuthUser(req);
 
-  if (!user || (user as any).role !== "ADMIN") {
+  if (!user || (user as AuthUserPayload).role !== "ADMIN") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
-  const { id } = await context.params; // 👈 important change
-  const data = await req.json();
+  const { id } = context.params;
+  const data = (await req.json()) as Record<string, unknown>;
 
   const updated = await updateUserByAdmin(id, data);
 
@@ -28,17 +28,17 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   await connectDB();
 
   const user = await getAuthUser(req);
 
-  if (!user || (user as any).role !== "ADMIN") {
+  if (!user || (user as AuthUserPayload).role !== "ADMIN") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
-  const { id } = await context.params;
+  const { id } = context.params;
 
   await deleteUserByAdmin(id);
 

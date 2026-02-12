@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import axiosInstance from "@/lib/axios";
+import axios from "axios";
 
 interface User {
   _id: string;
@@ -12,7 +14,11 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -23,15 +29,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    // dummy for build test (replace with real logic later)
+    const response = await axiosInstance.post("/api/auth/login", {
+      email,
+      password,
+    });
+    setUser(response.data.user);
   };
 
   const register = async (
     name: string,
     email: string,
     password: string
-  ) => {
-    // dummy for build test (replace with real logic later)
+  ): Promise<boolean> => {
+    try {
+      await axiosInstance.post("/api/auth/register", {
+        name,
+        email,
+        password,
+      });
+      return true;
+    } catch (error: unknown) {
+      let message = "Registration failed";
+
+      if (axios.isAxiosError(error)) {
+        const serverMessage = (error.response?.data as { message?: string })
+          ?.message;
+        if (serverMessage) {
+          message = serverMessage;
+        }
+      }
+
+      console.error("REGISTER ERROR:", error);
+      alert(message);
+      return false;
+    }
   };
 
   const logout = () => {

@@ -1,19 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/jwt";
+import { jwtVerify, JWTPayload } from "jose";
 
-export function middleware(req: NextRequest) {
+interface AuthJwtPayload extends JWTPayload {
+  id: string;
+  role: string;
+}
+
+async function verifyToken(token: string): Promise<AuthJwtPayload | null> {
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify<AuthJwtPayload>(token, secret);
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export async function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
+  const pathname = req.nextUrl.pathname;
 
-  if (!token && (req.nextUrl.pathname.startsWith("/dashboard") ||
-                 req.nextUrl.pathname.startsWith("/admin"))) {
+  // Require any token for protected routes
+  if (!token && (pathname.startsWith("/dashboard") || pathname.startsWith("/admin"))) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   if (token) {
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
 
-    if (req.nextUrl.pathname.startsWith("/admin") &&
-        decoded.role !== "ADMIN") {
+    // If token is invalid, send back to login
+    if (!decoded) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    // Only allow admins into /admin
+    if (pathname.startsWith("/admin") && decoded.role !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getAuthUser } from "@/lib/auth-guard";
+import { AuthUserPayload, getAuthUser } from "@/lib/auth-guard";
 import { getAllUsers } from "@/services/user.service";
 
 export async function GET(req: Request) {
@@ -8,7 +8,7 @@ export async function GET(req: Request) {
 
   const user = await getAuthUser(req);
 
-  if (!user || (user as any).role !== "ADMIN") {
+  if (!user || (user as AuthUserPayload).role !== "ADMIN") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
