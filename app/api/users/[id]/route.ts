@@ -14,11 +14,7 @@ export async function PUT(
 
   const user = await getAuthUser(req);
 
-<<<<<<< HEAD
-  if (!user || (String((user as AuthUserPayload).role).toLowerCase() !== "admin")) {
-=======
-  if (!user || (user as AuthUserPayload).role !== "admin") {
->>>>>>> 3b4f589b4563f8648c5c5a1c53241ef8e0ba12a2
+  if (!user || String((user as AuthUserPayload).role).toLowerCase() !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
@@ -38,11 +34,7 @@ export async function DELETE(
 
   const user = await getAuthUser(req);
 
-<<<<<<< HEAD
-  if (!user || (String((user as AuthUserPayload).role).toLowerCase() !== "admin")) {
-=======
-  if (!user || (user as AuthUserPayload).role !== "admin") {
->>>>>>> 3b4f589b4563f8648c5c5a1c53241ef8e0ba12a2
+  if (!user || String((user as AuthUserPayload).role).toLowerCase() !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

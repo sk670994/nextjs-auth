@@ -1,12 +1,8 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-<<<<<<< HEAD
-import { useEffect } from "react";
-=======
 import { FormEvent, useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
->>>>>>> 3b4f589b4563f8648c5c5a1c53241ef8e0ba12a2
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { logout, loginSuccess } from "@/redux/authSlice";
@@ -137,10 +133,10 @@ export default function Dashboard() {
 
   // If logged-in user is admin, redirect to admin panel
   useEffect(() => {
-    if (user && user.role === "admin") {
+    if (authUser && authUser.role === "admin") {
       router.replace("/admin");
     }
-  }, [user, router]);
+  }, [authUser, router]);
 
   const handleLogout = () => {
     dispatch(logout());
