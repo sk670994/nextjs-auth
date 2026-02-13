@@ -10,6 +10,7 @@ export default function Navbar() {
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+  const token = useSelector((state: RootState) => state.auth.token);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -23,7 +24,7 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-4 text-sm">
-        {!user && (
+        {!token && (
           <>
             <Link href="/login" className="hover:text-blue-300">
               Login
@@ -34,15 +35,17 @@ export default function Navbar() {
           </>
         )}
 
-        {user && (
+        {token && (
           <>
-            <span className="hidden sm:inline text-gray-300">
-              {user.name} ({user.role})
-            </span>
+            {user && (
+              <span className="hidden sm:inline text-gray-300">
+                {user.name} ({user.role})
+              </span>
+            )}
             <Link href="/dashboard" className="hover:text-blue-300">
               Dashboard
             </Link>
-            {user.role === "admin" && (
+            {user?.role === "admin" && (
               <Link href="/admin" className="hover:text-blue-300">
                 Admin
               </Link>

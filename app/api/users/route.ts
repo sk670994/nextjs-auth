@@ -8,7 +8,7 @@ export async function GET(req: Request) {
 
   const user = await getAuthUser(req);
 
-  if (!user || (user as AuthUserPayload).role !== "ADMIN") {
+  if (!user || (String((user as AuthUserPayload).role).toLowerCase() !== "admin")) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

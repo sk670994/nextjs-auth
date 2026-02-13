@@ -1,6 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { logout } from "@/redux/authSlice";
@@ -11,6 +12,13 @@ export default function Dashboard() {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.auth.user);
 
+  // If logged-in user is admin, redirect to admin panel
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      router.replace("/admin");
+    }
+  }, [user, router]);
+
   const handleLogout = () => {
     dispatch(logout());
     router.push("/login");
@@ -20,7 +28,7 @@ export default function Dashboard() {
     <ProtectedRoute>
       <main className="flex min-h-[calc(100vh-64px)] items-start justify-center px-4 py-8">
         <div className="w-full max-w-2xl space-y-6">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold">Welcome Page</h1>
 
           {user && (
             <div className="space-y-1 rounded border bg-gray-50 p-4">

@@ -14,7 +14,7 @@ export async function PUT(
 
   const user = await getAuthUser(req);
 
-  if (!user || (user as AuthUserPayload).role !== "ADMIN") {
+  if (!user || (String((user as AuthUserPayload).role).toLowerCase() !== "admin")) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
@@ -34,7 +34,7 @@ export async function DELETE(
 
   const user = await getAuthUser(req);
 
-  if (!user || (user as AuthUserPayload).role !== "ADMIN") {
+  if (!user || (String((user as AuthUserPayload).role).toLowerCase() !== "admin")) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
